@@ -3,6 +3,7 @@
 // prettier-ignore
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+// querySelectors
 const form = document.querySelector('.form');
 const containerWorkouts = document.querySelector('.workouts');
 const inputType = document.querySelector('.form__input--type');
@@ -37,6 +38,7 @@ if (navigator.geolocation) {
         inputDistance.focus();
       });
     },
+    // If is does get Location
     function () {
       alert('Could not get current position');
     }
@@ -65,7 +67,9 @@ form.addEventListener('submit', function (e) {
     .openPopup();
 });
 
+
+// Changes Eleveation and Cadence when switch to cycling and back.
 inputType.addEventListener('change', function() {
     inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
     inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
-})
+});
