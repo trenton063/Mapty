@@ -18,7 +18,7 @@ class App {
     #map;
     #mapEvent;
   constructor() {
-    this._getPosition;
+    this._getPosition();
 
     form.addEventListener('submit', this._newWorkout) 
       // Changes Eleveation and Cadence when switch to cyclng and back.
