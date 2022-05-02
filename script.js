@@ -4,14 +4,6 @@
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 // querySelectors
-const form = document.querySelector('.form');
-const containerWorkouts = document.querySelector('.workouts');
-const inputType = document.querySelector('.form__input--type');
-const inputDistance = document.querySelector('.form__input--distance');
-const inputDuration = document.querySelector('.form__input--duration');
-const inputCadence = document.querySelector('.form__input--cadence');
-const inputElevation = document.querySelector('.form__input--elevation');
-
 class Workout {
   date = new Date();
   id = (Date.now() + '').slice(-10);
@@ -31,8 +23,8 @@ class Running extends Workout {
   }
 
   calcPace() {
-      //min/km 
-      this.pace = this.duration / this.distance;
+    //min/km
+    this.pace = this.duration / this.distance;
   }
 }
 
@@ -44,21 +36,32 @@ class Cycling extends Workout {
   }
 
   calcSpeed() {
-        // km/h
-        this.speed = this.distance / (this.duration / 60);
-        return this.speed;
-    }
+    // km/h
+    this.speed = this.distance / (this.duration / 60);
+    return this.speed;
+  }
 }
 
-// const run1 = new Running([39, -12], 5.2, 24, 178); 
-// const Cycling1 = new Cycling([39, -12], 27, 95, 523); 
+// const run1 = new Running([39, -12], 5.2, 24, 178);
+// const Cycling1 = new Cycling([39, -12], 27, 95, 523);
 // console.log(run1, Cycling1);
 
 ////////////////////////////////////////////////////////////////
-// Application arcitacer 
+// Application arcitacer
+
+const form = document.querySelector('.form');
+const containerWorkouts = document.querySelector('.workouts');
+const inputType = document.querySelector('.form__input--type');
+const inputDistance = document.querySelector('.form__input--distance');
+const inputDuration = document.querySelector('.form__input--duration');
+const inputCadence = document.querySelector('.form__input--cadence');
+const inputElevation = document.querySelector('.form__input--elevation');
+
 class App {
   #map;
   #mapEvent;
+  #workouts = [];
+
   constructor() {
     this._getPosition();
     form.addEventListener('submit', this._newWorkout.bind(this));
@@ -105,14 +108,47 @@ class App {
   }
 
   _newWorkout(e) {
-    e.preventDefault();
-    inputDistance.value =
-      inputDuration.value =
-      inputCadence.value =
-      inputElevation.value =
-        '';
+    const validInputs = (...inputs) =>
+      inputs.every(inp => Number.isFinite(inp));
 
+    const allPositvee = (...input) =>
+      input.every(inp => (inp > 0));
+    e.preventDefault();
+
+    // Get data from the form
+    const type = inputType.value;
+    const distance = +inputDistance.value;
+    const duration = +inputDuration.value;
     const { lat, lng } = this.#mapEvent.latlng;
+
+    // If activity ruinning, create running object
+    if (type === 'running') {
+      const cadence = +inputCadence.value;
+      // check of data is valid
+      if (
+        !validInputs(distance, duration, cadence) ||
+        !allPositvee(distance, duration, cadence)
+      ) {
+        return alert('Input have to be Positive number!');
+      }
+
+      const workout = new Running([lat, lng], distance, duration, cadence);
+    }
+    // If activity cycling, create cycling object
+    if (type === 'cycling') {
+      const elevation = +inputElevation.value;
+      // check of data is valid
+      if (
+        !validInputs(distance, duration, elevation) ||
+        !allPositvee(distance, duration)
+      ) {
+        return alert('Input have to be Positive number!');
+      }
+    }
+    // add new object to workout array
+    this.#workouts.push(workout);
+
+    // Render workout on map as marker
     L.marker([lat, lng])
       .addTo(this.#map)
       .bindPopup(
@@ -126,6 +162,15 @@ class App {
       )
       .setPopupContent('Workout')
       .openPopup();
+    // render workout on list
+
+    // Hide form + clear inpit fields
+
+    inputDistance.value =
+      inputDuration.value =
+      inputCadence.value =
+      inputElevation.value =
+        '';
   }
 }
 
