@@ -235,7 +235,7 @@ class App {
         </div>
       </li>
       `;
-
+// test
     if (workout.type === 'cycling')
       html += `
         <div class="workout__details">
